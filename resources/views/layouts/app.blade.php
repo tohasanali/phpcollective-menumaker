@@ -79,7 +79,7 @@
                     @auth
                         @include('menu-maker::partials.menu')
                     @endauth
-                    <div class="col-md-8">
+                    <div class="col-md-9">
                         <div class="card">
                             @yield('content')
                         </div>
