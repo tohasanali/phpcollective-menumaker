@@ -82,7 +82,7 @@
                     @endforeach
                 </tbody>
             </table>
-            <div class="pagination float-right"> {!! $menus->render() !!} </div>
+            <div class="pagination float-right"> {!! $menus->appends(request()->query())->render() !!} </div>
         </div>
     </div>
 @endsection
