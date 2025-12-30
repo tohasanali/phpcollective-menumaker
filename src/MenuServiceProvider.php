@@ -31,6 +31,9 @@ class MenuServiceProvider extends ServiceProvider
         Blade::if('approve', function ($menu) {
             return auth()->user()->approve($menu);
         });
+        Blade::directive('menuMakerSearchHighlight', function ($expr) {
+            return "<?php echo menu_maker_search_highlight($expr); ?>";
+        });
 
         Route::model('user', '\\' . ltrim(config('auth.providers.users.model'), '\\'));
 
