@@ -6,6 +6,7 @@ use Illuminate\Routing\Controller;
 use PhpCollective\MenuMaker\Storage\Menu;
 use PhpCollective\MenuMaker\Storage\Role;
 use PhpCollective\MenuMaker\Http\Requests\MenuRequest as Request;
+use PhpCollective\MenuMaker\Support\Database;
 
 class MenuController extends Controller
 {
@@ -16,9 +17,19 @@ class MenuController extends Controller
      */
     public function index()
     {
-        $menus = Menu::with('ancestors')
-            ->where('parent_id', '>', 0)
-            ->paginate();
+        $query = Menu::with('ancestors')
+            ->where('parent_id', '>', 0);
+
+        if ($search = request('search')) {
+            $like = Database::likeOperator();
+
+            $query->where(function ($q) use ($search, $like) {
+                $q->where('name', $like, "%{$search}%")
+                    ->orWhere('link', $like, "%{$search}%");
+            });
+        }
+        $menus = $query->paginate();
+
         return view('menu-maker::menus.index', compact('menus'));
     }
 

@@ -8,6 +8,7 @@ use PhpCollective\MenuMaker\Storage\Role;
 use PhpCollective\MenuMaker\Jobs\RemoveUserMenuCache;
 use PhpCollective\MenuMaker\Http\Requests\MenuRoleRequest;
 use PhpCollective\MenuMaker\Http\Requests\RoleRequest as Request;
+use PhpCollective\MenuMaker\Support\Database;
 
 class RoleController extends Controller
 {
@@ -18,7 +19,16 @@ class RoleController extends Controller
      */
     public function index()
     {
-        $roles = Role::withoutGlobalScopes()->paginate();
+        $query = Role::withoutGlobalScopes();
+
+        if ($search = request('search')) {
+            $like = Database::likeOperator();
+
+            $query->where(function ($q) use ($search, $like) {
+                $q->where('name', $like, "%{$search}%");
+            });
+        }
+        $roles = $query->paginate();
         return view('menu-maker::roles.index', compact('roles'));
     }
 

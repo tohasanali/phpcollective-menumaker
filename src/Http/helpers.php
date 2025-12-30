@@ -94,3 +94,10 @@ if (! function_exists('unauthorized')) {
         return response()->view('menu-maker::errors.401');
     }
 }
+
+if (!function_exists('menu_maker_search_highlight')) {
+    function menu_maker_search_highlight($text, $search = null)
+    {
+        return \PhpCollective\MenuMaker\Support\Highlighter::apply($text, $search);
+    }
+}
