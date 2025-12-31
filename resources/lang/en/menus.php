@@ -25,6 +25,7 @@ return [
     'icon'        => 'Icon',
     'class'       => 'Class',
     'attr'        => 'Attributes',
+    'position'    => 'Position',
     'privilege'   => 'Privilege',
     'visible'     => 'Status',
     'visible_1'   => 'Visible',

@@ -69,6 +69,14 @@
     </div>
 </div>
 
+<div class="form-group row">
+    {!! Form::label('position', __('menu-maker::menus.position'), ['class' => 'col-md-4 col-form-label text-md-right']) !!}
+    <div class="col-md-6">
+        {!! Form::number('position', null, ['class' => $errors->has('position') ? 'form-control is-invalid' : 'form-control', 'step' => '1']) !!}
+        {!! $errors->first('position', '<span class="invalid-feedback" role="alert"><strong>:message</strong></span>') !!}
+    </div>
+</div>
+
 <div class="form-group row required">
     {!! Form::label('privilege', __('menu-maker::menus.privilege'), ['class' => 'col-md-4 col-form-label text-md-right']) !!}
     <div class="col-md-6">
