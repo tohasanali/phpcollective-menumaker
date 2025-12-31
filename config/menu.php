@@ -17,6 +17,20 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Menu Item Sorting
+    |--------------------------------------------------------------------------
+    |
+    | This option controls the default sorting direction of menu items.
+    | Supported values are:
+    |
+    |   - 'asc'  : Sort menu items in ascending order
+    |   - 'desc' : Sort menu items in descending order
+    |
+    */
+    'order_by' => 'asc',
+
+    /*
+    |--------------------------------------------------------------------------
     | Include Route List
     |--------------------------------------------------------------------------
     |

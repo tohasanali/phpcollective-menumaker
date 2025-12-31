@@ -132,6 +132,27 @@ class RoleController extends Controller
         }
         $role->menus()->attach($request->menu_ids);
 
+        // Update menu order if provided
+        if ($request->has('menu_order')) {
+            $order = json_decode($request->menu_order, true);
+            if (is_array($order)) {
+                $updatePosition = function ($items, $parentId) use (&$updatePosition) {
+                    foreach ($items as $index => $item) {
+                        $menu = Menu::find($item['id']);
+                        if ($menu) {
+                            $menu->position = $index;
+                            $menu->parent_id = $parentId;
+                            $menu->save();
+                        }
+                        if (!empty($item['children'])) {
+                            $updatePosition($item['children'], $item['id']);
+                        }
+                    }
+                };
+                $updatePosition($order, $request->section_id);
+            }
+        }
+
         $role->users->each(function ($user) {
             RemoveUserMenuCache::dispatch($user);
         });

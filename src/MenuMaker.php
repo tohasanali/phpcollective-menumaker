@@ -69,7 +69,8 @@ trait MenuMaker
     {
         $this->section->load([
             'descendants' => function ($query) {
-                $query->visible();
+                $query->visible()
+                    ->orderBy('position', config('menu.order_by', 'asc'));
             }
         ]);
 
@@ -97,7 +98,8 @@ trait MenuMaker
                                     ->where('pcmm_roles.is_active', true)
                                     ->where($this->getTable() . '.id', $this->id);
                             });
-                    });
+                    })
+                    ->orderBy('position', config('menu.order_by', 'asc'));
             }
         ]);
 
