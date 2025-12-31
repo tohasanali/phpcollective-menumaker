@@ -47,6 +47,7 @@
                             </div>
                         </div>
                         <div id="menu-tree"></div>
+                        <input type="hidden" name="menu_order" id="menu_order">
                         <div class="form-group row mb-0">
                             <div class="col-md-6 offset-md-4">
                                 {!! Form::submit(__('menu-maker::buttons.update'), ['class' => 'btn btn-primary']) !!}
@@ -62,10 +63,38 @@
         </div>
         <!-- /.row -->
     </div>
+    <style>
+        .sortable-tree {
+            padding-left: 2.5rem;
+            list-style: none;
+            min-height: 5px;
+        }
+
+        .sortable-tree:empty {
+            padding-bottom: 25px;
+        }
+
+        #menu-tree>.sortable-tree {
+            padding-left: 0;
+        }
+    </style>
 @endsection
 @push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.6/Sortable.min.js"></script>
     <script>
         $(function () {
+            function initSortable() {
+                $('.sortable-tree').each(function () {
+                    new Sortable(this, {
+                        group: 'nested',
+                        handle: '.handle',
+                        animation: 150,
+                        fallbackOnBody: true,
+                        swapThreshold: 0.65
+                    });
+                });
+            }
+
             $('#section_id').on('change', function (e) {
                 var menu_id = $(this).val() || 0,
                     role_id = $('#role_id').val() || 0;
@@ -73,6 +102,7 @@
                 if (menu_id > 0) {
                     $.get(baseUrl() + 'menus/' + menu_id + '/tree?g=' + role_id, function (data, status) {
                         $('#menu-tree').html(data);
+                        initSortable();
                     }).fail(function (xhr, status, error) {
                         alert("An AJAX error occured: " + status + "\nError: " + error);
                     });
@@ -95,6 +125,29 @@
             });
 
             $('#section_id').trigger('change');
+
+            $('form').on('submit', function () {
+                var order = [];
+                function buildOrder(list) {
+                    var items = [];
+                    $(list).children('li').each(function () {
+                        var id = $(this).data('id');
+                        var children = [];
+                        var subList = $(this).find('> ul');
+                        if (subList.length) {
+                            children = buildOrder(subList);
+                        }
+                        items.push({ id: id, children: children });
+                    });
+                    return items;
+                }
+
+                var rootList = $('#menu-tree').find('> ul');
+                if (rootList.length) {
+                    order = buildOrder(rootList);
+                }
+                $('#menu_order').val(JSON.stringify(order));
+            });
         });
     </script>
 @endpush

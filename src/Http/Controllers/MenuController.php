@@ -166,13 +166,17 @@ class MenuController extends Controller
      */
     public function tree(Menu $node)
     {
-        $tree = Menu::descendantsOf($node)
+        $tree = Menu::whereDescendantOf($node)
             ->where('privilege', 'PROTECTED')
+            ->orderBy('position', config('menu.order_by', 'asc'))
+            ->get()
             ->toTree($node);
         $selected = [];
-        if(request()->has('g') && request('g') > 0)
-        {
-            $selected = Role::findOrFail(request('g'))->menus()->descendantsOf($node)->pluck('id')->toArray();
+        if (request()->has('g') && request('g') > 0) {
+            $selected = \DB::table('pcmm_menu_role')
+                ->where('role_id', request('g'))
+                ->pluck('menu_id')
+                ->toArray();
         }
         return view('menu-maker::menus.tree', compact('tree', 'selected'));
     }
@@ -181,8 +185,10 @@ class MenuController extends Controller
 
         if (request()->ajax()) {
             $group_id = request('g');
-            $parent_id = request('p');
-            $selected = Role::findOrFail($group_id)->menus()->descendantsOf($parent_id)->pluck('id')->toArray();
+            $selected = \DB::table('pcmm_menu_role')
+                ->where('role_id', $group_id)
+                ->pluck('menu_id')
+                ->toArray();
             return response()->json(compact('selected'), 200);
         }
         return response()->json([
